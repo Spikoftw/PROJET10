@@ -13,7 +13,20 @@ import Modal from "../../containers/Modal";
 import { useData } from "../../contexts/DataContext";
 
 const Page = () => {
-  const { last } = useData();
+  const { data } = useData();
+
+  let last = null;
+
+  if (data && data.events && data.events.length > 0) {
+    // Filtrer les événements avec des dates valides
+    const validEvents = data.events.filter((event) => !!event.date);
+
+    // Trier les événements par date dans l'ordre décroissant
+    validEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Obtenir le premier événement (le plus récent) après le tri
+    last = validEvents.shift();
+  }
   return (
     <>
       <header>
@@ -111,47 +124,50 @@ const Page = () => {
           </Modal>
         </div>
       </main>
-      <footer className="row">
-        <div className="col presta">
-          <h3>Notre derniére prestation</h3>
-          <EventCard
-            imageSrc={last?.cover}
-            title={last?.title}
-            date={new Date(last?.date)}
-            small
-            label="boom"
-          />
-        </div>
-        <div className="col contact">
-          <h3>Contactez-nous</h3>
-          <address>45 avenue de la République, 75000 Paris</address>
-          <div>01 23 45 67 89</div>
-          <div>contact@77events.com</div>
-          <div>
-            <a href="#twitch">
-              <Icon name="twitch" />
-            </a>
-            <a href="#facebook">
-              <Icon name="facebook" />
-            </a>
-            <a href="#twitter">
-              <Icon name="twitter" />
-            </a>
-            <a href="#youtube">
-              <Icon name="youtube" />
-            </a>
+      {last && last.cover && (
+        <footer className="row">
+          <div className="col presta">
+            <h3>Notre derniére prestation</h3>
+            <EventCard
+              imageSrc={last?.cover}
+              imageAlt={last?.description}
+              title={last?.title}
+              date={new Date(last?.date)}
+              small
+              label={last?.type}
+            />
           </div>
-        </div>
-        <div className="col description">
-          <Logo size="large" />
-          <p>
-            Une agence événementielle propose des prestations de service
-            spécialisées dans la conception et l&apos;organisation de divers
-            événements tels que des événements festifs, des manifestations
-            sportives et culturelles, des événements professionnels
-          </p>
-        </div>
-      </footer>
+          <div className="col contact">
+            <h3>Contactez-nous</h3>
+            <address>45 avenue de la République, 75000 Paris</address>
+            <div>01 23 45 67 89</div>
+            <div>contact@77events.com</div>
+            <div>
+              <a href="#twitch">
+                <Icon name="twitch" />
+              </a>
+              <a href="#facebook">
+                <Icon name="facebook" />
+              </a>
+              <a href="#twitter">
+                <Icon name="twitter" />
+              </a>
+              <a href="#youtube">
+                <Icon name="youtube" />
+              </a>
+            </div>
+          </div>
+          <div className="col description">
+            <Logo size="large" />
+            <p>
+              Une agence événementielle propose des prestations de service
+              spécialisées dans la conception et l&apos;organisation de divers
+              événements tels que des événements festifs, des manifestations
+              sportives et culturelles, des événements professionnels
+            </p>
+          </div>
+        </footer>
+      )}
     </>
   );
 };
